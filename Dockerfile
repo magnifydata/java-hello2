@@ -1,4 +1,4 @@
-FROM gradle:jdk-lts-and-current
+FROM gradle:jdk17
 WORKDIR /app
 COPY . .
 RUN gradle bootJar --no-daemon
