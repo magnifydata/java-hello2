@@ -1,5 +1,5 @@
-FROM eclipse-temurin:25-jdk
+FROM gradle:jdk-lts-and-current
 WORKDIR /app
 COPY . .
-RUN chmod +x gradlew && ./gradlew bootJar
+RUN gradle bootJar --no-daemon
 CMD ["sh", "-c", "java -Dserver.port=${PORT:-10000} -jar build/libs/*.jar"]
