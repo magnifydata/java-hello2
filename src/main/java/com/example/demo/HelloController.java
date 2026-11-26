@@ -17,11 +17,6 @@ public class HelloController {
         "We will fix that in the next release."
     };
 
-    @GetMapping("/")
-    public String sayHello() {
-        return "Hello from Java! Add /excuse?name=YourName to the end of this URL.";
-    }
-
     @GetMapping("/excuse")
     public Map<String, String> getExcuse(@RequestParam(defaultValue = "Developer") String name) {
         int index = new Random().nextInt(excuses.length);
