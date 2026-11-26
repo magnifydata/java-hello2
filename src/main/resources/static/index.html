@@ -11,7 +11,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
         .card {
@@ -19,17 +19,17 @@
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 420px;
+            max-width: 440px;
             width: 90%;
             text-align: center;
         }
         input {
-            width: 75%;
+            width: 80%;
             padding: 10px;
             margin-bottom: 12px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
         }
         button {
             background-color: #2563eb;
@@ -37,18 +37,29 @@
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
         }
         button:hover {
             background-color: #1d4ed8;
         }
+        .secondary-btn {
+            background-color: #059669;
+        }
+        .secondary-btn:hover {
+            background-color: #047857;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 24px 0;
+        }
         #result {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 18px;
+            font-size: 17px;
             font-weight: 600;
             color: #1f2937;
-            min-height: 28px;
+            min-height: 24px;
         }
         #raw-json {
             margin-top: 16px;
@@ -66,12 +77,19 @@
 <body>
     <div class="card">
         <h2>Developer Excuse Generator</h2>
-        <p>Powered by your Java Spring Boot API</p>
-        <input type="text" id="nameInput" placeholder="Enter your name (e.g. Alex)">
+        <input type="text" id="nameInput" placeholder="Enter your name (e.g. Sam)">
         <br>
-        <button onclick="fetchExcuse()">Get Excuse</button>
+        <button onclick="fetchExcuse()">Get Excuse (GET)</button>
+
+        <hr>
+
+        <h3>Add a New Excuse</h3>
+        <input type="text" id="newExcuseInput" placeholder="e.g. Blame it on DNS.">
+        <br>
+        <button class="secondary-btn" onclick="addExcuse()">Save to Java (POST)</button>
+
         <div id="result"></div>
-        <div id="raw-json">Raw JSON will appear here...</div>
+        <div id="raw-json">JSON response will appear here...</div>
     </div>
 
     <script>
@@ -83,6 +101,23 @@
             const data = await response.json();
 
             document.getElementById('result').textContent = `${data.for}: "${data.excuse}"`;
+            document.getElementById('raw-json').textContent = JSON.stringify(data);
+        }
+
+        async function addExcuse() {
+            const excuseInput = document.getElementById('newExcuseInput');
+            const excuseText = excuseInput.value.trim();
+            if (!excuseText) return;
+
+            const response = await fetch('/excuse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ excuse: excuseText })
+            });
+            const data = await response.json();
+
+            excuseInput.value = '';
+            document.getElementById('result').textContent = `Saved! Java now holds ${data.totalExcuses} excuses.`;
             document.getElementById('raw-json').textContent = JSON.stringify(data);
         }
     </script>
