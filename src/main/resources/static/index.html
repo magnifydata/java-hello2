@@ -12,14 +12,14 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            margin: 20px 0;
         }
         .card {
             background: white;
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 440px;
+            max-width: 480px;
             width: 90%;
             text-align: center;
         }
@@ -49,10 +49,19 @@
         .secondary-btn:hover {
             background-color: #047857;
         }
+        .delete-btn {
+            background-color: #dc2626;
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #b91c1c;
+        }
         hr {
             border: none;
             border-top: 1px solid #e5e7eb;
-            margin: 24px 0;
+            margin: 22px 0;
         }
         #result {
             margin-top: 18px;
@@ -62,7 +71,7 @@
             min-height: 24px;
         }
         #raw-json {
-            margin-top: 16px;
+            margin-top: 14px;
             padding: 10px;
             background: #f1f5f9;
             border-radius: 6px;
@@ -71,6 +80,20 @@
             color: #475569;
             text-align: left;
             word-break: break-all;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #374151;
         }
     </style>
 </head>
@@ -90,6 +113,11 @@
 
         <div id="result"></div>
         <div id="raw-json">JSON response will appear here...</div>
+
+        <hr>
+
+        <h3>All Excuses in Java Memory</h3>
+        <ul id="excuseList"></ul>
     </div>
 
     <script>
@@ -119,7 +147,43 @@
             excuseInput.value = '';
             document.getElementById('result').textContent = `Saved! Java now holds ${data.totalExcuses} excuses.`;
             document.getElementById('raw-json').textContent = JSON.stringify(data);
+            loadAllExcuses();
         }
+
+        async function deleteExcuse(index) {
+            const response = await fetch(`/excuse/${index}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+
+            document.getElementById('result').textContent = `Removed: "${data.removed}"`;
+            document.getElementById('raw-json').textContent = JSON.stringify(data);
+            loadAllExcuses();
+        }
+
+        async function loadAllExcuses() {
+            const response = await fetch('/excuses');
+            const excuses = await response.json();
+            const listEl = document.getElementById('excuseList');
+            listEl.innerHTML = '';
+
+            excuses.forEach((text, index) => {
+                const li = document.createElement('li');
+                const span = document.createElement('span');
+                span.textContent = `${index}: ${text}`;
+
+                const btn = document.createElement('button');
+                btn.textContent = 'Delete';
+                btn.className = 'delete-btn';
+                btn.onclick = () => deleteExcuse(index);
+
+                li.appendChild(span);
+                li.appendChild(btn);
+                listEl.appendChild(li);
+            });
+        }
+
+        loadAllExcuses();
     </script>
 </body>
 </html>
